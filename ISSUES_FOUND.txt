@@ -1,0 +1,106 @@
+Manual Review
+
+
+
+
+
+Automated Testing:
+-------------------
+
+
+MEDIUM SEVERITY ISSUES
+
+1. Violation of Check Effects Interaction pattern
+ Function name - claim() (contracts/Aqua.sol#558-566):
+	External calls:
+	- token.transfer(msg.sender,claimamount) (contracts/Aqua.sol#562)
+	State variables written after the call(s):
+	- amountmaptouserprivate[usermapprivate[msg.sender].aqarid] = 0 (contracts/Aqua.sol#564)
+	- amountmaptouserpublic[usermappublic[msg.sender].aqarid] = 0 (contracts/Aqua.sol#563)
+	- amountmaptouserseed[usermapseed[msg.sender].aqarid] = 0 (contracts/Aqua.sol#565)
+ Function name - privateusdt(string,string,string,string,uint256) (contracts/Aqua.sol#479-496):
+	External calls:
+	- usdt.transferFrom(msg.sender,address(this),_amount) (contracts/Aqua.sol#488)
+	State variables written after the call(s):
+	- privateamount = privateamount.add(_amount.mul(privateprice).div(1000)) (contracts/Aqua.sol#489)
+ Function name - publicusdt(string,string,string,string,uint256) (contracts/Aqua.sol#519-536):
+	External calls:
+	- usdt.transferFrom(msg.sender,address(this),_amount) (contracts/Aqua.sol#528)
+	State variables written after the call(s):
+	- publicamount = publicamount.add(_amount.mul(publicprice).div(10)) (contracts/Aqua.sol#529)
+ Function name - seedusdt(string,string,string,string,uint256) (contracts/Aqua.sol#439-456):
+	External calls:
+	- usdt.transferFrom(msg.sender,address(this),_amount) (contracts/Aqua.sol#446)
+	State variables written after the call(s):
+	- amountmaptouserseed[_id] = amountmaptouserseed[_id].add(_amount.mul(seedprice)) (contracts/Aqua.sol#448)
+	- seedamount = seedamount.add(_amount.mul(seedprice)) (contracts/Aqua.sol#449)
+
+2. Return value of external call is not used effectively
+ Function name - .seedusdt(string,string,string,string,uint256) (contracts/Aqua.sol#439-456) ignores return value by usdt.transferFrom(msg.sender,address(this),_amount) (contracts/Aqua.sol#446)
+
+ Function name - .privateusdt(string,string,string,string,uint256) (contracts/Aqua.sol#479-496) ignores return value by usdt.transferFrom(msg.sender,address(this),_amount) (contracts/Aqua.sol#488)
+
+ Function name - .publicusdt(string,string,string,string,uint256) (contracts/Aqua.sol#519-536) ignores return value by usdt.transferFrom(msg.sender,address(this),_amount) (contracts/Aqua.sol#528)
+
+ Function name - .claim() (contracts/Aqua.sol#558-566) ignores return value by token.transfer(msg.sender,claimamount) (contracts/Aqua.sol#562)
+
+ Function name - .fundsWithdrawal(IERC20,uint256) (contracts/Aqua.sol#601-609) ignores return value by _token.transfer(msg.sender,value) (contracts/Aqua.sol#607)
+
+--------------------------------------------------------------------------------------------
+
+LOW SEVERITY ISSUES
+
+1. External Visibility should be preferred
+getBnbBalance() should be declared external:
+	-  Function name - .getBnbBalance() (contracts/Aqua.sol#585-587)
+
+2. Constant declaration should be preferred
+ Function name - .privateprice (contracts/Aqua.sol#400) should be constant
+ Function name - .publicprice (contracts/Aqua.sol#401) should be constant
+ Function name - .seedprice (contracts/Aqua.sol#399) should be constant
+
+
+3. Too many digits
+The following functions in the  Function name -  contract has this issue:
+
+NOTE - ATTACH THE Screen Shot of any one of these function in the actual audit report.
+
+seedusdt(string,string,string,string,uint256) (contracts/Aqua.sol#439-456)  :
+	- require(bool,string)(_amount >= 100000000000000000000 && _amount <= 25000000000000000000000,Enter some amount) (contracts/Aqua.sol#440)
+
+seedbnb(string,string,string,string) (contracts/Aqua.sol#458-478)  :
+	- require(bool,string)(msg.value.mul(getBnbRate()).div(1e18) >= 100000000000000000000 && msg.value.mul(getBnbRate()).div(1e18) <= 25000000000000000000000,the input bnb amount should be greater than hundred and less than twentyfivethousand) (contracts/Aqua.sol#460-463)
+
+privateusdt(string,string,string,string,uint256) (contracts/Aqua.sol#479-496)  :
+	- require(bool,string)(_amount >= 1000000000000000000000 && _amount <= 100000000000000000000000,Enter some amount) (contracts/Aqua.sol#480)
+
+	- privateamount.add(_amount.mul(privateprice).div(1000)) <= 12000000000000000000000000 (contracts/Aqua.sol#485)
+privatebnb(string,string,string,string) (contracts/Aqua.sol#497-517)  :
+	- require(bool,string)(msg.value.mul(getBnbRate()).div(1e18) >= 1000000000000000000000 && msg.value.mul(getBnbRate()).div(1e18) <= 100000000000000000000000,the input 
+
+4. Comparision to Boolean Constant
+
+
+INFORMATIONAL
+
+5. Code Style Issues
+
+
+
+------------------------------------------------------------------------------------------------
+HIGH SEVERITY ISSUES
+
+NOTE - DON'T WRITE THESE IN THE REPORT
+
+aqarchain (contracts/Aqua.sol#347-613) contract sets array length with a user-controlled value:
+	- usersarr.push(msg.sender) (contracts/Aqua.sol#491)
+aqarchain (contracts/Aqua.sol#347-613) contract sets array length with a user-controlled value:
+	- usersarr.push(msg.sender) (contracts/Aqua.sol#451)
+aqarchain (contracts/Aqua.sol#347-613) contract sets array length with a user-controlled value:
+	- usersarr.push(msg.sender) (contracts/Aqua.sol#531)
+
+
+2. Sends eth to aribary user
+aqarchain.adminTransferBnbFund() (contracts/Aqua.sol#589-591) sends eth to arbitrary user
+	Dangerous calls:
+	- msg.sender.transfer(address(this).balance) (contracts/Aqua.sol#590)
