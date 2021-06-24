@@ -9,7 +9,9 @@ Functions Reviewed till Date
 
 6. getBnbRate
 7. seedUsdt
-8. 
+8. seedbnb
+9. privateusdt
+10. privateBNB
 
 High Severity
 1. Line no - 443,466,483, 503, 523, 543, => Invalid require statement. Doesn't restrict user's action adequately.
@@ -143,7 +145,7 @@ INFORMATIONAL
 
 5. Code Style Issues
 
-
+6. 236-276 => Remove Commented Lines
 
 ------------------------------------------------------------------------------------------------
 HIGH SEVERITY ISSUES
