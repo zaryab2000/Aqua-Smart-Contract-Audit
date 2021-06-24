@@ -1,8 +1,66 @@
 Manual Review
+--------------
+Functions Reviewed till Date
+1. privatemap
+2. toggleclaim,toggleseed,toggleprivate, togglepublic
+3. getBnbBalance, adminTransferBnbFund
+4. getContractTokenBalance
+5. fundsWithdrawal
+
+6. getBnbRate
+7. seedUsdt
+8. 
+
+High Severity
+1. Line no - 443,466,483, 503, 523, 543, => Invalid require statement. Doesn't restrict user's action adequately.
+
+Explanation:
+The require statement at the above-mentioned lines involves an assignment operator(=) instead of an Equality Operator(==).
+
+This leads to a completely unwanted scenario where the boolean values like publicrun, seedrun etc aren't being validated for TRUE or FALSE but simply being assigned a TRUE boolean value.
+
+In other words, users can execute these functions even if the Seed round or Private Round boolean value is FALSE.
+
+Recommendation:
+The above-mentioned require statements should use the equality operator to impose an adequate require statement validation.
+
+For instance,
+        require(seedrun == true,"seed round is not started or over"); or,
+
+        require(seedrun,"seed round is not started or over");
 
 
 
 
+Medium Severity
+1. Line 454, 476, 494, 515, 534,555 => Use require statement instead of IF and REVERT
+
+
+
+
+Low Severity
+1. Line 393,396,404,405,406 => Redundant State Variable Update
+
+Explanation:
+The AquarChain Smart contract involves redundant update of some of the State variables in the contract.
+
+A boolean variable is by-default initialized to FALSE where as a uint256 is initialized to ZERO. Hence, such state variable doesn't need to be initialized explicitly.
+
+Recommendation:
+Redundant initialization of state variables should be avoided.
+
+2. Line 572, 575, 578, 581 => Function promises a return Value of UINT256 but do not return anything.
+
+Explanation:
+The functions at the above mentioned lines indicates a uint256 return value at their function signature. 
+
+However, none of those function actually return any uint256 value. If no a uint value is not explicitly returned, the functions will simply return a default return value for uint256, i.e., ZERO.
+
+Recommendation:
+If the above-mentioned functions are not supposed to return any uint256 value, the function signatures should be modifed accordingly.
+
+
+3.  Contract includes Hardhcoded address
 
 Automated Testing:
 -------------------
