@@ -14,7 +14,7 @@ Functions Reviewed till Date
 10. privateBNB
 
 High Severity
-1. Line no - 443,466,483, 503, 523, 543, => Invalid require statement. Doesn't restrict user's action adequately.
+1. Line no - 443,465,481, 501, 520, 540,555 => Invalid require statement. Doesn't restrict user's action adequately.
 
 Explanation:
 The require statement at the above-mentioned lines involves an assignment operator(=) instead of an Equality Operator(==).
@@ -31,17 +31,59 @@ For instance,
 
         require(seedrun,"seed round is not started or over");
 
+2. publicbnb function stores wrong Data on Chain.
+Line 546
 
+Explaination:
+As per the current design of the publicbnb function, it stores a wrong uint value to the publicamount state variable.
+
+The total amount of tokens being sold at Public Sale Round is being stored in terms of Private Sale round.
+
+In other words, the publicamount state variable is being wrongly updated as it stores the value of tokens sold by adding it to the privateamount state varible instead of the public amount state vairble.
+
+This will lead to a completely unwanted scenario where the date stored on chain about the total tokens Sold in the public round will be different from the actual tokens sold in public round.
+
+Recommendation:
+The Line no 546 in the publicbnb function should be modified as follows:
+        publicamount=publicamount.add(msg.value.mul(getBnbRate()).mul(publicprice).div(1e18).div(10));
+
+3. Invalid Require statement could make publicBnb function completely inaccessible
+Line no - 541
+
+Explaination:
+The publicbnb function includes a require statement in the above-mentioned line which checks whether or not the privateamount is less than public sale supply.
+
+This is an inaccurate validation as the require statement checks the Public Sale Supply limit with the privateamount state variable instead of publicamount state variable.
+
+Moreover, since the private sale supply(12,000,000)is comparatively larger than the public sale supply(1,000,000), the privateamount state variable might be greater than the public sale supply limit at any instance and the require statement at line 541 shall never qualify.
+This will lead to an unexpected scenario where the publicbnb function will be completely inaccessible and will never get executed.
+
+Recommendation:
+The require statement of publicbnb function at the above mentioned line should be updated as follows:
+
+        require(publicamount<=1000000000000000000000000,"private round token sale completed");
 
 
 Medium Severity
-1. Line 454, 476, 494, 515, 534,555 => Use require statement instead of IF and REVERT
+1. Line 454, 475, 492, 512, 531,551 => Use require statement instead of IF and REVERT
 
+2. claimamount can be a Local Variable instead of a State Variable.
+Line no - 396,557,562
 
+Explaination:
+The State variable claimamount has no signifcant usage in the Contract, as per the current design of the protocol.
+The variable is used to store the total claimable amount of a user which is then transferred to the user. Once transferred, the claimable state variable is assigned a Zero Value again. 
+In simpler terms, the claimamoun state variable shall always hold Zero Value and never symbolize any imperative state chnage in the protocol.
+Using claimamount as a State Variable unncessarily uses extra Spaces and affects the Gas Usage in the contract.
+
+Is the USE of claimamount as a State Variable intended?
+
+Recommendation:
+If the above-mentioned scenario is not intended, it is recommedned to modify the claimamount variable as a local variable instead of state variable,
 
 
 Low Severity
-1. Line 393,396,404,405,406 => Redundant State Variable Update
+1. Line 393,396,409,410,411,412 => Redundant State Variable Update
 
 Explanation:
 The AquarChain Smart contract involves redundant update of some of the State variables in the contract.
@@ -51,7 +93,7 @@ A boolean variable is by-default initialized to FALSE where as a uint256 is init
 Recommendation:
 Redundant initialization of state variables should be avoided.
 
-2. Line 572, 575, 578, 581 => Function promises a return Value of UINT256 but do not return anything.
+2. Line 569, 572, 575, 578 => Function promises a return Value of UINT256 but do not return anything.
 
 Explanation:
 The functions at the above mentioned lines indicates a uint256 return value at their function signature. 
@@ -62,7 +104,10 @@ Recommendation:
 If the above-mentioned functions are not supposed to return any uint256 value, the function signatures should be modifed accordingly.
 
 
-3.  Contract includes Hardhcoded address
+3. Line 418 Contract includes Hardhcoded address
+
+
+4
 
 Automated Testing:
 -------------------
